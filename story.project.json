@@ -1,0 +1,14 @@
+{
+	"name": "inkworks",
+	"tree": {
+		"$className": "DataModel",
+		"ReplicatedStorage": {
+			"packages": {
+				"$path": "./packages"
+			},
+			"inkworks": {
+				"$path": "./src"
+			}
+		}
+	}
+}

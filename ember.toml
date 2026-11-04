@@ -1,0 +1,28 @@
+[package]
+name = "teamfireworks/inkworks"
+version = "0.1.0-alpha.1"
+description = "Roblox component library"
+authors = ["rniraclefire"]
+repository = "https://github.com/teamfireworks/inkworks"
+license = "MIT"
+
+[target]
+environment = "roblox"
+main = "src/init.luau"
+
+[dependencies]
+ink = { name = "teamfireworks/ink", version = "^" }
+
+[dev-dependencies]
+ui_labs = { name = "pepeeltoro41/ui-labs", version = "^", index = "wally" }
+
+[scripts]
+dev = "rojo serve story.project.json"
+
+[indices]
+wally = "https://github.com/UpliftGames/wally-index"
+
+[tools]
+luau-lsp = "johnnymorganz/luau-lsp@1.70.1"
+stylua = "johnnymorganz/stylua@2.6.0"
+rojo = "rojo-rbx/rojo@7.7.1"
