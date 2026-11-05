@@ -1,4 +1,5 @@
 local ink = require("../../packages/roblox/ink")
+local phosphor = require("../../packages/roblox/phosphor")
 local theme = require("../theme")
 local text = require("./text")
 
@@ -10,6 +11,7 @@ export type ButtonProperties = {
 	size: ButtonSize?,
 	disabled: boolean?,
 	bounds: Rect?,
+	icon: phosphor.Key?,
 	label: string?,
 	content: ink.Composite?,
 }

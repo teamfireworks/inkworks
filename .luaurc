@@ -1,4 +1,7 @@
 {
 	"languageMode": "strict",
-	"lint": {"*": true}
+	"lint": {"*": true},
+	"aliases": {
+		"packages": "./packages/roblox"
+	},
 }
