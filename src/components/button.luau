@@ -1,6 +1,6 @@
 local ink = require("../../packages/roblox/ink")
 local theme = require("../theme")
-local label = require("./label")
+local text = require("./text")
 
 export type ButtonVariant = "default" | "accent" | "ghost" | "success" | "danger"
 export type ButtonSize = "default" | "sm" | "lg"
@@ -9,7 +9,6 @@ export type ButtonProperties = {
 	variant: ButtonVariant?,
 	size: ButtonSize?,
 	disabled: boolean?,
-	activated: () -> (),
 	bounds: Rect?,
 	label: string?,
 	content: ink.Composite?,
@@ -43,7 +42,7 @@ const function button_space(t: theme.Theme, size: ButtonSize)
 	end
 end
 
-const function button(s: ink.Scope, properties: ButtonProperties): ink.Composite
+const function button(s: ink.Scope, properties: ButtonProperties): (ink.Composite, boolean)
 	local t = theme.context:get(s)
 
 	local variant = properties.variant or "default"
@@ -51,16 +50,16 @@ const function button(s: ink.Scope, properties: ButtonProperties): ink.Composite
 	local bg_transparency, fg_transparency = 0, 0
 	local bg_color, fg_color = button_colors(t, variant)
 
-	local content_composites
+	local content
 	if properties.content then
-		content_composites = { properties.content }
+		content = properties.content
 	else
-		content_composites = {}
+		local content_composites = {}
 		if properties.label then
-			table.insert(content_composites, label(s, properties.label, "label"))
+			table.insert(content_composites, text(s, properties.label, "label"))
 		end
+		content = ink.h_stack(content_composites, gap)
 	end
-	local content = ink.h_stack(content_composites, gap)
 
 	local bounds = properties.bounds or ink.inset_rect_xy(content.bounds, -x_pad, -y_pad)
 	local hit = ink.hit_region(s, bounds)
@@ -68,10 +67,6 @@ const function button(s: ink.Scope, properties: ButtonProperties): ink.Composite
 	if properties.disabled then
 		bg_transparency, fg_transparency = 0.5, 0.5
 	else
-		if hit.clicked then
-			properties.activated()
-		end
-
 		if hit.state == Enum.GuiState.Hover then
 			bg_color = ink.color.shade(bg_color, t.shade.hover)
 		elseif hit.state == Enum.GuiState.Press then
@@ -93,7 +88,7 @@ const function button(s: ink.Scope, properties: ButtonProperties): ink.Composite
 	content = ink.tint(content, fg_color, fg_transparency)
 	content = ink.align(content, bounds, ink.ALIGN_MID, ink.ALIGN_MID)
 
-	return ink.compose({ bg, content, hit })
+	return ink.compose({ bg, content, hit }), not properties.disabled and hit.clicked
 end
 
 return button

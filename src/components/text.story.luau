@@ -1,7 +1,7 @@
 local ink = require("../../packages/roblox/ink")
 local ui_labs = require("../../packages/roblox/ui_labs")
 local theme = require("../theme")
-local label = require("./label")
+local text = require("./text")
 local theme_preview = require("./theme_preview")
 
 const CONTROLS = {
@@ -14,7 +14,7 @@ return ink.ui_labs_story({
 	render = function(properties: ink.StoryProperties<typeof(CONTROLS)>)
 		return theme_preview(properties.scope, properties.target_bounds, function(s)
 			const t = theme.context:get(s)
-			return ink.tint(label(s, properties.controls.text, properties.controls.variant), t.colors.on_surface)
+			return ink.tint(text(s, properties.controls.text, properties.controls.variant), t.colors.on_surface)
 		end)
 	end,
 })

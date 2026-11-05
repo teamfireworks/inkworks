@@ -15,18 +15,20 @@ return ink.ui_labs_story({
 	render = function(properties: ink.StoryProperties<typeof(CONTROLS)>)
 		const s_count = properties.scope:key("count")
 		const count = s_count:get(0)
-		const function activated()
-			print(`Pressed {s_count:set(count + 1)}x times`)
-		end
 
 		return theme_preview(properties.scope, properties.target_bounds, function(s)
-			return button(s, {
+			const b, b_activated = button(s, {
 				label = "Press Me",
 				variant = properties.controls.variant,
 				size = properties.controls.size,
 				disabled = properties.controls.disabled,
-				activated = activated,
 			})
+
+			if b_activated then
+				print(`Pressed {s_count:set(count + 1)}x times`)
+			end
+
+			return b
 		end)
 	end,
 })
