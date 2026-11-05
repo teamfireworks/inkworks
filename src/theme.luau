@@ -1,7 +1,43 @@
--- theme.luau
-local theme_types = require("./theme_types")
+local ink = require("../packages/roblox/ink")
 
-const function token(r: number, g: number, b: number, transparency: number): theme_types.Token
+export type TextVariant = "caption" | "body" | "label" | "heading" | "title"
+
+export type ColorToken = { color: Color3, transparency: number }
+export type Colors = {
+	bg: Color3,
+	surface: Color3,
+	surface_raised: Color3,
+	overlay: Color3,
+	emphasis: Color3,
+	on_surface: Color3,
+	muted: Color3,
+	accent: Color3,
+	on_accent: Color3,
+	danger: Color3,
+	success: Color3,
+	warning: Color3,
+	border: ColorToken,
+	border_emphasis: ColorToken,
+	hover: ColorToken,
+	press: ColorToken,
+	scrim: ColorToken,
+	shadow: ColorToken,
+}
+
+export type Theme = {
+	colors: Colors,
+
+	shade: { hover: number, press: number },
+
+	text: { [TextVariant]: ink.TextStyle },
+
+	space: { xxs: number, xs: number, sm: number, md: number, lg: number, xl: number, xxl: number },
+	radius: { sm: number, md: number, lg: number, full: number },
+
+	motion: { speed: number, damping: number },
+}
+
+const function color_token(r: number, g: number, b: number, transparency: number): ColorToken
 	return { color = Color3.fromRGB(r, g, b), transparency = transparency }
 end
 
@@ -15,15 +51,15 @@ theme.DEFAULT_TEXT = table.freeze({
 	title = table.freeze({ size = 25, font = Enum.Font.BuilderSansBold }),
 })
 
-theme.DEFAULT_SPACE = table.freeze({ xxs = 1, xs = 2, sm = 4, md = 8, lg = 12, xl = 16, xxl = 24 })
+theme.DEFAULT_SPACE = table.freeze({ xxs = 1, xs = 2, sm = 4, md = 6, lg = 8, xl = 10, xxl = 12 })
 theme.DEFAULT_RADIUS = table.freeze({ sm = 4, md = 6, lg = 8, full = math.huge })
 theme.DEFAULT_MOTION = table.freeze({ speed = 30, damping = 1 })
 
 theme.STUDIO_DARK = table.freeze({
 	colors = table.freeze({
 		bg = Color3.fromRGB(18, 18, 21),
-		surface = Color3.fromRGB(25, 26, 31),
-		surface_raised = Color3.fromRGB(32, 34, 39),
+		surface = Color3.fromRGB(32, 34, 39),
+		surface_raised = Color3.fromRGB(51, 52, 58),
 		overlay = Color3.fromRGB(39, 41, 48),
 		emphasis = Color3.fromRGB(247, 247, 248),
 		on_surface = Color3.fromRGB(213, 215, 221),
@@ -33,22 +69,22 @@ theme.STUDIO_DARK = table.freeze({
 		danger = Color3.fromRGB(223, 40, 31),
 		success = Color3.fromRGB(57, 197, 130),
 		warning = Color3.fromRGB(242, 186, 42),
-		border = token(208, 217, 251, 0.88),
-		border_emphasis = token(208, 217, 251, 0.84),
-		hover = token(208, 217, 251, 0.92),
-		press = token(208, 217, 251, 0.88),
-		scrim = token(10, 10, 14, 0.25),
-		shadow = token(0, 0, 0, 0.5),
+		border = color_token(208, 217, 251, 0.88),
+		border_emphasis = color_token(208, 217, 251, 0.84),
+		hover = color_token(208, 217, 251, 0.92),
+		press = color_token(208, 217, 251, 0.88),
+		scrim = color_token(10, 10, 14, 0.25),
+		shadow = color_token(0, 0, 0, 0.5),
 	}),
 	shade = table.freeze({
-		light = -0.04,
-		dark = -0.02,
+		hover = 0.015,
+		press = -0.0075,
 	}),
 	text = theme.DEFAULT_TEXT,
 	space = theme.DEFAULT_SPACE,
 	radius = theme.DEFAULT_RADIUS,
 	motion = theme.DEFAULT_MOTION,
-}) :: theme_types.Theme
+}) :: Theme
 
 theme.STUDIO_LIGHT = table.freeze({
 	colors = table.freeze({
@@ -64,21 +100,23 @@ theme.STUDIO_LIGHT = table.freeze({
 		danger = Color3.fromRGB(223, 40, 31),
 		success = Color3.fromRGB(57, 197, 130),
 		warning = Color3.fromRGB(242, 186, 42),
-		border = token(27, 37, 75, 0.88),
-		border_emphasis = token(27, 37, 75, 0.84),
-		hover = token(27, 37, 75, 0.92),
-		press = token(27, 37, 75, 0.88),
-		scrim = token(10, 10, 14, 0.5),
-		shadow = token(0, 0, 0, 0.5),
+		border = color_token(27, 37, 75, 0.88),
+		border_emphasis = color_token(27, 37, 75, 0.84),
+		hover = color_token(27, 37, 75, 0.92),
+		press = color_token(27, 37, 75, 0.88),
+		scrim = color_token(10, 10, 14, 0.5),
+		shadow = color_token(0, 0, 0, 0.5),
 	}),
 	shade = table.freeze({
-		light = -0.02,
-		dark = -0.04,
+		hover = -0.03,
+		press = -0.06,
 	}),
 	text = theme.DEFAULT_TEXT,
 	space = theme.DEFAULT_SPACE,
 	radius = theme.DEFAULT_RADIUS,
 	motion = theme.DEFAULT_MOTION,
-}) :: theme_types.Theme
+}) :: Theme
+
+theme.context = ink.context<<Theme>>(theme.STUDIO_DARK)
 
 return table.freeze(theme)

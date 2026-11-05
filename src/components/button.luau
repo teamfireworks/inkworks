@@ -1,38 +1,55 @@
 local ink = require("../../packages/roblox/ink")
-local theme_context = require("../theme/theme_context")
-local theme_types = require("../theme/theme_types")
+local theme = require("../theme")
 local label = require("./label")
 
 export type ButtonVariant = "default" | "accent" | "ghost" | "success" | "danger"
+export type ButtonSize = "default" | "sm" | "lg"
 
 export type ButtonProperties = {
 	variant: ButtonVariant?,
+	size: ButtonSize?,
 	disabled: boolean?,
 	activated: () -> (),
-
 	bounds: Rect?,
 	label: string?,
 	content: ink.Composite?,
 }
 
-const function button_colors(theme: theme_types.Theme, variant: ButtonVariant): (Color3, Color3)
+const function button_colors(t: theme.Theme, variant: ButtonVariant): (Color3, Color3)
 	if variant == "default" then
-		return theme.colors.surface, theme.colors.on_surface
+		return t.colors.surface, t.colors.on_surface
 	elseif variant == "accent" then
-		return theme.colors.accent, theme.colors.on_accent
+		return t.colors.accent, t.colors.on_accent
 	elseif variant == "ghost" then
-		return theme.colors.surface, theme.colors.on_surface
+		return t.colors.surface, t.colors.on_surface
 	elseif variant == "danger" then
-		return theme.colors.danger, theme.colors.on_accent
+		return t.colors.danger, t.colors.on_accent
 	elseif variant == "success" then
-		return theme.colors.success, theme.colors.on_accent
+		return t.colors.success, t.colors.on_accent
+	else
+		error("unreachable")
+	end
+end
+
+const function button_space(t: theme.Theme, size: ButtonSize)
+	if size == "default" then
+		return t.space.sm, t.space.xl, t.space.lg, t.radius.lg
+	elseif size == "sm" then
+		return t.space.xs, t.space.lg, t.space.md, t.radius.md
+	elseif size == "lg" then
+		return t.space.md, t.space.xxl, t.space.xl, t.radius.lg
 	else
 		error("unreachable")
 	end
 end
 
 const function button(s: ink.Scope, properties: ButtonProperties): ink.Composite
-	local theme = theme_context:get(s)
+	local t = theme.context:get(s)
+
+	local variant = properties.variant or "default"
+	local gap, x_pad, y_pad, round = button_space(t, properties.size or "default")
+	local bg_transparency, fg_transparency = 0, 0
+	local bg_color, fg_color = button_colors(t, variant)
 
 	local content_composites
 	if properties.content then
@@ -43,13 +60,9 @@ const function button(s: ink.Scope, properties: ButtonProperties): ink.Composite
 			table.insert(content_composites, label(s, properties.label, "label"))
 		end
 	end
-	local content = ink.h_stack(content_composites, theme.space.sm)
+	local content = ink.h_stack(content_composites, gap)
 
-	local variant = properties.variant or "default"
-	local bg_transparency, fg_transparency = 0, 0
-	local bg_color, fg_color = button_colors(theme, variant)
-
-	local bounds = properties.bounds or ink.inset_rect(content.bounds, -theme.space.lg)
+	local bounds = properties.bounds or ink.inset_rect_xy(content.bounds, -x_pad, -y_pad)
 	local hit = ink.hit_region(s, bounds)
 
 	if properties.disabled then
@@ -60,21 +73,21 @@ const function button(s: ink.Scope, properties: ButtonProperties): ink.Composite
 		end
 
 		if hit.state == Enum.GuiState.Hover then
-			bg_color = ink.color.shade(bg_color, theme.shade.dark)
+			bg_color = ink.color.shade(bg_color, t.shade.hover)
 		elseif hit.state == Enum.GuiState.Press then
-			bg_color = ink.color.shade(bg_color, theme.shade.light)
+			bg_color = ink.color.shade(bg_color, t.shade.press)
 		elseif properties.variant == "ghost" then
 			bg_transparency = 1
 		end
 	end
 
-	bg_transparency = ink.spring(s:key("bg_transparency"), bg_transparency, theme.motion.speed, theme.motion.damping)
-	fg_transparency = ink.spring(s:key("fg_transparency"), fg_transparency, theme.motion.speed, theme.motion.damping)
-	bg_color = ink.spring(s:key("bg_color"), bg_color, theme.motion.speed, theme.motion.damping)
-	fg_color = ink.spring(s:key("fg_color"), fg_color, theme.motion.speed, theme.motion.damping)
+	bg_transparency = ink.spring(s:key("bg_transparency"), bg_transparency, t.motion.speed, t.motion.damping)
+	fg_transparency = ink.spring(s:key("fg_transparency"), fg_transparency, t.motion.speed, t.motion.damping)
+	bg_color = ink.spring(s:key("bg_color"), bg_color, t.motion.speed, t.motion.damping)
+	fg_color = ink.spring(s:key("fg_color"), fg_color, t.motion.speed, t.motion.damping)
 
 	local bg = ink.solid(bounds, Color3.new(1, 1, 1))
-	bg = ink.round(bg, theme.radius.lg)
+	bg = ink.round(bg, round)
 	bg = ink.tint(bg, bg_color, bg_transparency)
 
 	content = ink.tint(content, fg_color, fg_transparency)
