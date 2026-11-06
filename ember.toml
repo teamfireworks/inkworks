@@ -12,7 +12,7 @@ main = "src/init.luau"
 
 [dependencies]
 ink = { name = "teamfireworks/ink", version = "^" }
-phosphor = { name = "teamfireworks/rbxphosphoricons", version = "^" }
+prospero = { name = "teamfireworks/prospero", version = "^1.0.0" }
 
 [dev-dependencies]
 ui_labs = { name = "pepeeltoro41/ui-labs", version = "^", index = "wally" }
